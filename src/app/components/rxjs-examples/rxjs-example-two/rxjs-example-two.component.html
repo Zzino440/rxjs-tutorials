@@ -1,0 +1,19 @@
+<mat-progress-bar class="" *ngIf="isLoading" mode="query"></mat-progress-bar>
+<div class="w-100 container pt-5 d-flex justify-content-centern">
+  <div class="row">
+    <div class="col-8 d-flex title">
+      Observables and RxJS operators page 2
+    </div>
+    <div class="col d-flex">
+      <img ngSrc="assets/rxjs-logo.png" height="50" width="50" alt="RxJS logo">
+    </div>
+  </div>
+</div>
+
+<div class="pt-5 container d-flex justify-content-start">
+  <div class="row">
+    <div class="col-12">
+      <button mat-button mat-flat-button color="primary" (click)="onClickFetchAlbumData()">getAlbumData</button>
+    </div>
+  </div>
+</div>
