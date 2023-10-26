@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Observable, Subscription, switchMap} from "rxjs";
+import {Observable, shareReplay, Subscription, switchMap, take} from "rxjs";
 import {Post} from "../../../models/post";
 import {HttpClient} from "@angular/common/http";
 import {share, tap} from "rxjs/operators";
@@ -20,15 +20,18 @@ export class RxjsExampleThreeComponent implements OnInit {
   selectedUserId = 1;
 
   userUri: string = 'https://jsonplaceholder.typicode.com/users';
+  postsUri: string = 'https://jsonplaceholder.typicode.com/posts';
 
   userDetails$: Observable<User> = this.httpClient.get<User>(`${this.userUri}/${this.selectedUserId}`);
 
   sharedDetails$!: Observable<any>;
   subscription1!: Subscription;
   subscription2!: Subscription;
+  subscription3!: Subscription;
 
   user!: User;
   albums: Album[] = []
+  posts!:Post[];
 
   constructor(private httpClient: HttpClient) {
   }
@@ -44,7 +47,7 @@ export class RxjsExampleThreeComponent implements OnInit {
     // Observable condiviso
     this.sharedDetails$ = this.userDetails$.pipe(
       tap(() => console.log('Start loading user details')), // console log per debug
-      share() // Condivisione della sottoscrizione tra più osservatori
+      shareReplay(1) // Condivisione della sottoscrizione tra più osservatori
     );
   }
 
@@ -75,5 +78,19 @@ export class RxjsExampleThreeComponent implements OnInit {
         console.log('albums: ', albums);
         this.albums = albums;
       });
+  }
+
+  thirdMethod() {
+    this.subscription3 = this.sharedDetails$
+      .pipe(
+        switchMap(userData => {
+            let userID = userData.id
+            return this.httpClient.get<Post[]>(`${this.userUri}/${userID}/posts`)
+          }
+        )
+      ).subscribe(posts => {
+        this.posts = posts;
+        console.log('posts: ',posts)
+      })
   }
 }

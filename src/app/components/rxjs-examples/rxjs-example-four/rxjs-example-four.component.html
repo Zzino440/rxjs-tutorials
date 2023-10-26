@@ -9,10 +9,13 @@
     </div>
   </div>
 </div>
-<div *ngIf="!isLoading && !(hasError$ | async)" class="container pt-2 d-flex justify-content-center">
+
+
+
+<div class="container pt-2 d-flex justify-content-center">
   <div class="row">
     <div class="col-12">
-      <mat-accordion>
+      <mat-accordion *ngFor="let post of posts">
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
@@ -23,7 +26,7 @@
                       <mat-icon class="mr-3">person</mat-icon> <!-- Icona dell'utente -->
                     </div>
                     <div class="col d-flex align-items-center">
-                      <div><span class="fw-bold">User ID: </span> {{user.id}}</div>
+                      <div *ngIf="user"><span class="fw-bold">User ID: </span> {{user.id}}</div>
                     </div>
                   </div>
                 </div>
@@ -42,7 +45,7 @@
           </mat-expansion-panel-header>
 
           <!-- Contenuto del pannello espandibile -->
-          <div class="p-3">
+<!--          <div class="p-3">
             <div class="fs-4">Comments</div>
             <mat-list>
               <mat-list-item *ngFor="let comment of comments">
@@ -50,27 +53,9 @@
                 <div class="fst-italic">{{comment.name}}</div>
               </mat-list-item>
             </mat-list>
-          </div>
+          </div>-->
         </mat-expansion-panel>
       </mat-accordion>
-    </div>
-  </div>
-</div>
-
-<div *ngIf="(hasError$ | async)">
-  <div class="container d-flex justify-content-center">
-    <div class="row">
-      <div class="col">
-        <h1>No data</h1>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="pt-3 container d-flex justify-content-start">
-  <div class="row">
-    <div class="col-12">
-      <button mat-button mat-flat-button color="primary" (click)="onClickFetchAlbumData()">getAlbumData</button>
     </div>
   </div>
 </div>

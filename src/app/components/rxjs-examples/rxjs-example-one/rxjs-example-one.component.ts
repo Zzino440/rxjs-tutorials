@@ -3,19 +3,19 @@ import {HttpClient} from "@angular/common/http";
 import {Post} from "../../../models/post";
 import {
   BehaviorSubject,
-  catchError, concatMap,
-  filter,
+  catchError,
   finalize,
   forkJoin,
-  map, mergeMap,
+  map,
   Observable,
-  of, retry,
+  of,
   Subscription,
   switchMap,
   tap
 } from "rxjs";
 import {User} from "../../../models/user";
 import {Comments} from "../../../models/comments";
+import {filter} from "rxjs/operators";
 
 @Component({
   selector: 'app-rxjs-example-one',
