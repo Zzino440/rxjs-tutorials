@@ -21,12 +21,13 @@ export class RxjsExampleThreeComponent implements OnInit {
 
   userUri: string = 'https://jsonplaceholder.typicode.com/users';
 
-  userDetails$: Observable<User> = this.httpClient.get<Post>(`${this.userUri}/${this.selectedUserId}`);
+  userDetails$: Observable<User> = this.httpClient.get<User>(`${this.userUri}/${this.selectedUserId}`);
 
   sharedDetails$!: Observable<any>;
   subscription1!: Subscription;
   subscription2!: Subscription;
 
+  user!: User;
   albums: Album[] = []
 
   constructor(private httpClient: HttpClient) {
@@ -34,18 +35,17 @@ export class RxjsExampleThreeComponent implements OnInit {
 
   ngOnInit(): void {
     this.init();
-    this.firstMethod()
-    this.secondMethod()
+    this.firstMethod();
+    this.secondMethod();
   }
 
 
   init() {
     // Observable condiviso
     this.sharedDetails$ = this.userDetails$.pipe(
-      tap(() => console.log('Start loading post details')), // console log per debug
+      tap(() => console.log('Start loading user details')), // console log per debug
       share() // Condivisione della sottoscrizione tra più osservatori
     );
-
   }
 
 
@@ -53,9 +53,10 @@ export class RxjsExampleThreeComponent implements OnInit {
   firstMethod() {
     // Sottoscrizione al userDetails$ condiviso
     this.subscription1 = this.sharedDetails$
-      .subscribe(completeDetails => {
-        console.log('completeDetails: ', completeDetails)
+      .subscribe(userData => {
+        console.log('userData: ', userData)
         console.log('First method completed'); // console log per debug
+        this.user = userData;
       });
   }
 
@@ -71,8 +72,8 @@ export class RxjsExampleThreeComponent implements OnInit {
         })
       )
       .subscribe(albums => {
-        console.log('albums: ', albums)
-        this.albums = albums
+        console.log('albums: ', albums);
+        this.albums = albums;
       });
   }
 }

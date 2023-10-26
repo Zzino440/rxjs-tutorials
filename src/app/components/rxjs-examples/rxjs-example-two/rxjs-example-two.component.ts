@@ -96,7 +96,6 @@ export class RxjsExampleTwoComponent implements OnInit,OnDestroy {
         .pipe(
           filter(details => details !== null && details.user !== null),
           switchMap(details => {
-            console.log('details: ', details)
             const userId = details.user.id;
             return this.httpClient.get<Album[]>(`${this.userUri}/${userId}/albums`);
           })

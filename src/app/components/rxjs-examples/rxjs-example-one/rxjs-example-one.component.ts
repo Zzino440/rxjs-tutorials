@@ -3,13 +3,13 @@ import {HttpClient} from "@angular/common/http";
 import {Post} from "../../../models/post";
 import {
   BehaviorSubject,
-  catchError,
+  catchError, concatMap,
   filter,
   finalize,
   forkJoin,
-  map,
+  map, mergeMap,
   Observable,
-  of,
+  of, retry,
   Subscription,
   switchMap,
   tap
@@ -34,13 +34,10 @@ export class RxjsExampleOneComponent implements OnInit, OnDestroy {
   userUri: string = 'https://jsonplaceholder.typicode.com/users';
   postsUri: string = 'https://jsonplaceholder.typicode.com/posts';
 
-  //variabile per indicare caricamento nell'interfaccia (se presente)
-  isLoading = false; // Imposta lo stato di loading
+  isLoading = false;
 
-  // id del post come placeholder
   selectedPostId = 1;
 
-  //variabile per contenere e mostrare l'elenco dei post
   postDetails$: Observable<Post> = this.httpClient.get<Post>(`${this.postsUri}/${this.selectedPostId}`);
 
   post: Post = new Post();
@@ -56,45 +53,35 @@ export class RxjsExampleOneComponent implements OnInit, OnDestroy {
     /*    this.methodWithPromises();*/
   }
 
-  //metodo rxjs con operatori switchMap, map e
+  //metodo rxjs con operatori switchMap, map e forkJoin
   methodWithRxjsOperators() {
-    this.isLoading = true; // Imposta lo stato di loading
+    this.isLoading = true;
 
-    // creo una variabile che contenga la sottoscrizione in modo da poi poter fare l'unsubscribe
     this.subscription = this.postDetails$
       .pipe(
-        tap(() => this.isLoading = true),
-        filter(post => post.userId !== null),
         switchMap(post => {
-          const userId = post.userId;
           return forkJoin({
-            user: this.httpClient.get<User>(`${this.userUri}/${userId}`),
-            comments: this.httpClient.get<Comments[]>(`${this.postsUri}/${post.id}/comments`),
+            user: this.httpClient.get<User>(`${this.userUri}/${post.userId}`),
+            comments: this.httpClient.get<Comments[]>(`${this.postsUri}/${post.id}/comments`)
           })
             .pipe(
               map(details => {
-                return {
-                  post,
-                  user: details.user,
-                  comments: details.comments
-                }
+                return {post, user: details.user, comments: details.comments,}
               }),
               catchError(error => {
-                console.error("Something went wrong: ", error);
-                this.hasError$.next(true) // Imposta lo stato di errore a true
-                return of(null); // Ritorna un Observable di null in caso di errore
+                this.hasError$.next(true)
+                return of(null);
               }),
-              finalize(() => this.isLoading = false)  // Resetta lo stato di loading quando l'observable è completo
+              finalize(() => this.isLoading = false)
             )
         }),
-        finalize(() => this.isLoading = false)  // Resetta lo stato di loading quando l'observable è completo
+        finalize(() => this.isLoading = false)
       )
       .subscribe(completeDetails => {
         if (completeDetails) {
-          console.log('completeDetails: ', completeDetails)
           this.post = completeDetails.post;
           this.user = completeDetails.user;
-          this.comments = completeDetails.comments
+          this.comments = completeDetails.comments;
         }
       });
   }
@@ -113,7 +100,7 @@ export class RxjsExampleOneComponent implements OnInit, OnDestroy {
         this.httpClient.get<User>(`${this.userUri}/${userId}`).toPromise()
           .then(async user => {
 
-            // Effettua la seconda chiamata per ottenere i tweets
+            // Effettua la seconda chiamata per ottenere i commenti
             const comments = await this.httpClient.get<Comments[]>(`${this.postsUri}/${this.selectedPostId}/comments`).toPromise();
             return {
               post,
@@ -139,6 +126,8 @@ export class RxjsExampleOneComponent implements OnInit, OnDestroy {
       });
     }*/
 
+  //faccio l'unsubscribe alla distruzione del componente
+  //questa operazione viene effettuata automaticamente nel caso in cui io utilizzi la pipe | async
   ngOnDestroy() {
     this.subscription?.unsubscribe();
   }

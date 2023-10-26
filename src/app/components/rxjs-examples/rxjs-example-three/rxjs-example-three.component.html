@@ -18,7 +18,7 @@
           <mat-card-title>User Details</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <div *ngIf="sharedDetails$ | async as user">
+          <div *ngIf="user">
             <mat-list>
               <mat-list-item>
                 <h3 matLine>User ID</h3>
