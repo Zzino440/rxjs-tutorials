@@ -1,4 +1,4 @@
-# ****Angular e RxJS: Un Approccio alla Programmazione Reattiva****
+Esempio codice pratico
 
 ## **Chi sono**
 
@@ -78,6 +78,24 @@ Questa guida è progettata per introdurre alcuni degli operatori più utili e ve
 
 L'operatore **`map`** in RxJS è utilizzato per trasformare i dati emessi da un Observable. Ad esempio, si potrebbe voler raddoppiare una serie di numeri: utilizzando **`map`**, ogni valore emesso dall'Observable verrà moltiplicato per due, creando un nuovo Observable che emette i valori raddoppiati.
 
+### Esempio
+
+```tsx
+import { of } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+const source$ = of(1, 2, 3, 4, 5);
+const doubled$ = source$.pipe(
+  map(value => value * 2)
+);
+
+doubled$.subscribe(val => console.log(val));
+
+**//output 2 4 6 8 10**
+```
+
+Nell'esempio a sinistra, stiamo utilizzando l'operatore **`of`** per creare un Observable che emette i valori da 1 a 5. Tramite l'operatore **`map`**, stiamo trasformando ogni valore emesso moltiplicandolo per 2. Alla fine, l'Observable **`doubled$`** emetterà i valori 2, 4, 6, 8 e 10.
+
 ### **Esempio pratico**
 
 Immaginiamo di fare una chiamata HTTP e di ricevere un oggetto **`User`**. Da questo oggetto potremmo voler estrarre soltanto i campi **`id`** e **`email`**. Usando **`map`**, possiamo trasformare l'Observable di **`User`** in un nuovo Observable che contiene solo i dati necessari.
@@ -88,6 +106,50 @@ Immaginiamo di fare una chiamata HTTP e di ricevere un oggetto **`User`**. Da qu
 - **Efficienza**: Le trasformazioni avvengono in tempo reale, senza attendere che tutti i dati siano disponibili.
 - **Contesto**: A differenza della funzione **`map`** degli array, in RxJS si lavora con flussi di dati asincroni.
 
+## Differenze map RxJS e “map” negli Array
+
+L'operatore **map** in RxJS e l'operatore **map** degli array normali hanno un concetto simile, ma vengono utilizzati in contesti diversi.
+
+Similitudini:
+
+- Entrambi gli operatori consentono di trasformare i valori di un insieme di dati.
+- Sia in RxJS che negli array normali, è possibile applicare una funzione di trasformazione a ciascun valore per ottenere un nuovo valore corrispondente.
+
+Differenze:
+
+- In RxJS, **map** è un operatore utilizzato per trasformare i valori emessi da un Observable. L'output di **map** è un nuovo Observable con i valori trasformati. Questo permette di lavorare in modo semplice ed efficiente all'interno di uno stream di dati, applicando trasformazioni a ciascun valore emesso.
+- Negli array normali, **map** è un metodo disponibile per gli array. Viene utilizzato per trasformare gli elementi di un array, applicando una funzione di trasformazione a ciascun elemento e ottenendo un nuovo array con gli elementi trasformati. Questo consente di lavorare con i dati in modo simile a RxJS, ma senza il concetto di stream di dati emessi nel tempo.
+
+Esempio di utilizzo di **map** in RxJS:
+
+Esempio di utilizzo di **map** negli Array normali:
+
+```tsx
+const numbers$ = of(1, 2, 3, 4, 5);
+
+numbers$.pipe(
+  map(num => num * 2)
+).subscribe(result => console.log(result));
+
+// Output: 2, 4, 6, 8, 10
+
+```
+
+```tsx
+const numbers = [1, 2, 3, 4, 5];
+
+const doubledNumbers = numbers.map(num => num * 2);
+
+console.log(doubledNumbers);
+
+// Output: [2, 4, 6, 8, 10]
+
+```
+
+In entrambi gli esempi, viene applicata una funzione di trasformazione (moltiplicazione per 2) a ciascun valore e viene ottenuto un nuovo insieme di valori corrispondenti.
+
+In sintesi, l'operatore **map** in RxJS e il metodo **map** degli array normali condividono il concetto di trasformazione dei valori, ma vengono utilizzati in contesti diversi: RxJS per lavorare con stream di dati emessi nel tempo, mentre gli array normali per lavorare con insiemi di dati statici.
+
 ## **Operatore `forkJoin`**
 
 ### **Cosa fa?**
@@ -97,6 +159,23 @@ Immaginiamo di fare una chiamata HTTP e di ricevere un oggetto **`User`**. Da qu
 ### **Esempio pratico**
 
 **`forkJoin`** prende un array di Observable e restituisce un nuovo Observable che emette un array con i risultati di ciascun Observable in ingresso, solo dopo che tutti si sono completati.
+
+```tsx
+import { forkJoin, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
+
+// Simuliamo 3 chiamate HTTP con ritardi diversi utilizzando `of` e `delay`.
+const call1$ = of('Risultato chiamata 1').pipe(delay(1000));  
+const call2$ = of('Risultato chiamata 2').pipe(delay(2000));
+const call3$ = of('Risultato chiamata 3').pipe(delay(3000));
+
+forkJoin([call1$, call2$, call3$]).subscribe(result => {
+  console.log(result);
+});
+
+// Output dopo 3 secondi:
+// ["Risultato chiamata 1", "Risultato chiamata 2", "Risultato chiamata 3"]
+```
 
 ### **Vantaggi**
 
@@ -116,13 +195,57 @@ Immaginiamo di fare una chiamata HTTP e di ricevere un oggetto **`User`**. Da qu
 
 Supponiamo di avere una chiamata HTTP che restituisce un array di post. Ogni post ha un campo **`id`**. Utilizzando **`switchMap`**, è possibile usare questo **`id`** per effettuare una seconda chiamata HTTP e ottenere una lista di commenti correlati a quel post.
 
-### Iterazione su Array
+```tsx
+import { switchMap } from 'rxjs/operators';
 
-**`switchMap`** può anche essere utilizzato per iterare su un array e applicare trasformazioni su ogni elemento, ad esempio estrarre gli indirizzi email da un array di utenti.
+data: Comment[];
 
-### **Considerazioni**
+// Simuliamo una selezione di un ID.
+constructor(http: HttpClient) {
+    http.get<Array<Post>>('https://jsonplaceholder.typicode.com/posts/')
+      .pipe(
+        switchMap(posts => http.get<Array<Comment>>('https://jsonplaceholder.typicode.com/comments/?postId=' + posts[1].id))
+      )
+       .subscribe(
+          res => {
+            console.log(res)
+          }
+        )
+  } //output -> elenco di commenti legati ai post
+```
 
-- **Annullamento della sottoscrizione**: **`switchMap`** annulla la sottoscrizione all'Observable precedente quando viene generato un nuovo Observable.
+### **Esempio con Iterazione sugli Array**
+
+Un altro caso d'uso interessante di **`switchMap`** è la possibilità di iterare su un array di elementi e applicare ulteriori trasformazioni o operazioni su ogni elemento. Prendiamo come esempio la seguente chiamata HTTP, che restituisce un array di oggetti **`User`**:
+
+```tsx
+http.get<User[]>('https://jsonplaceholder.typicode.com/users')
+  .pipe(
+    switchMap(users => users),
+    map(user => user.email),
+    toArray()
+  )
+  .subscribe( res => {
+    console.log('res:', res);
+	}
+  );
+
+// Output console ["alice@example.com", "bob@example.com", "charlie@example.com"]
+```
+
+Nell'esempio, il metodo **`http.get`** restituisce un Observable che emette un array di oggetti **`User`**. Utilizziamo l'operatore **`switchMap`** per "aprire" questo array e ottenere un nuovo Observable per ciascun elemento del array.
+
+Il funzionamento qui è un po' diverso dal caso d'uso precedente: **`switchMap`** riceve un array come input e lo "smonta", emettendo un nuovo Observable per ciascun elemento del array. Questi nuovi Observable sono poi processati dagli operatori successivi nella catena **`pipe`**.
+
+L'operatore **`map`** viene utilizzato successivamente per estrarre solamente la proprietà **`email`** da ogni oggetto **`User`**. Alla fine, l'operatore **`toArray`** raccoglie tutti i valori trasformati in un singolo array che viene emesso.
+
+Il risultato finale è un array di indirizzi email che viene assegnato alla variabile **`this.output`** all'interno del metodo **`subscribe`**.
+
+Questo esempio mostra come **`switchMap`** possa essere utilizzato non solo per gestire dipendenze tra Observable, ma anche per iterare su collezioni di dati, consentendo ulteriori trasformazioni o operazioni su ciascun elemento.
+
+### **Considerazioni Importanti**
+
+Una delle principali differenze tra **`switchMap`** e altri operatori di mapping come **`map`** o **`mergeMap`** è che **`switchMap`** annulla la sottoscrizione all'Observable precedente ogni volta che ne viene generato uno nuovo. Questo comportamento è particolarmente utile per evitare effetti indesiderati come chiamate HTTP multiple o sottoscrizioni multiple quando si desidera che solo l'ultimo valore emesso sia considerato.
 
 ## **Conclusione**
 
@@ -143,9 +266,7 @@ Questa guida si concentra sul metodo **`methodWithRxjsOperators()`**, che serve 
 Prima di tutto, impostare la variabile **`this.isLoading`** a **`true`**. Questo flag è utile per mostrare un indicatore di caricamento nell'interfaccia utente.
 
 ```tsx
-tsxCopy code
 this.isLoading = true;
-
 ```
 
 ## **Sottoscrizione al Flusso di Dati**
@@ -155,9 +276,7 @@ this.isLoading = true;
 Sottoscriviti al flusso dati **`this.postDetails$`** come segue:
 
 ```tsx
-tsxCopy code
 this.subscription = this.postDetails$;
-
 ```
 
 ## **Utilizzo degli Operatori**
@@ -167,13 +286,11 @@ this.subscription = this.postDetails$;
 Applica l'operatore **`switchMap`** per manipolare i post ricevuti dal flusso. Questo operatore consente di effettuare ulteriori chiamate API per recuperare dettagli sull'utente e i commenti associati a ciascun post.
 
 ```tsx
-tsxCopy code
 .pipe(
   switchMap(post => {
     // ...
   })
 )
-
 ```
 
 ### **Uso del forkJoin**
@@ -181,12 +298,10 @@ tsxCopy code
 Dentro il blocco **`switchMap`**, utilizza l'operatore **`forkJoin`** per effettuare chiamate API multiple in parallelo. Ad esempio, per ottenere i dettagli dell'utente e i commenti associati a un post specifico:
 
 ```tsx
-tsxCopy code
 return forkJoin({
   user: this.httpClient.get<User>(`${this.userUri}/${post.userId}`),
   comments: this.httpClient.get<Comments[]>(`${this.postsUri}/${post.id}/comments`)
 });
-
 ```
 
 ### **Uso di map e catchError**
@@ -194,7 +309,6 @@ return forkJoin({
 Dopo aver ottenuto i dati, utilizza l'operatore **`map`** per formattare i dati secondo le tue necessità. In caso di errore, l'operatore **`catchError`** permette di gestire le eccezioni.
 
 ```tsx
-tsxCopy code
 .pipe(
   map(details => {
     return {post, user: details.user, comments: details.comments,}
@@ -204,7 +318,6 @@ tsxCopy code
     return of(null);
   })
 )
-
 ```
 
 ### **Uso del finalize**
@@ -212,9 +325,7 @@ tsxCopy code
 L'operatore **`finalize`** è utile per eseguire operazioni di pulizia o per aggiornare lo stato del componente, come impostare **`this.isLoading`** a **`false`**, a prescindere dall'esito della chiamata.
 
 ```tsx
-tsxCopy code
-finalize(() => this.isLoading = false)
-
+finalize(() => this.isLoading = false
 ```
 
 ## **Assegnazione Finale dei Dati**
@@ -222,7 +333,6 @@ finalize(() => this.isLoading = false)
 Alla fine, la sottoscrizione al flusso dati ti permetterà di assegnare i dettagli completi alle variabili d'istanza del componente Angular.
 
 ```tsx
-tsxCopy code
 .subscribe(completeDetails => {
   if (completeDetails) {
     this.post = completeDetails.post;
@@ -230,7 +340,6 @@ tsxCopy code
     this.comments = completeDetails.comments;
   }
 });
-
 ```
 
 ## **Conclusioni**
