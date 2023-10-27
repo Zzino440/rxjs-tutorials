@@ -2,7 +2,9 @@
 
 Lorenzo Belli, sviluppatore front-end specializzato in Angular, condivide la sua esperienza nell'uso di Angular e RxJS per ottimizzare e migliorare il codice durante le attività di bug fixing. La guida è stata anche resa possibile con l'aiuto di strumenti come ChatGPT.
 
-Link a Notion AI (usato per creare documentazione): https://scientific-cicada-9b7.notion.site/Angular-e-RxJS-Un-Approccio-alla-Programmazione-Reattiva-c37f42e355e8444f80a4e7e2f531d56f?pvs=4
+## **Link utili** 
+Notion AI (usato per creare documentazione): https://scientific-cicada-9b7.notion.site/Angular-e-RxJS-Un-Approccio-alla-Programmazione-Reattiva-c37f42e355e8444f80a4e7e2f531d56f?pvs=4
+Google Drive con PDF scaricabili documentazione: https://drive.google.com/drive/folders/1tH-5iYFIIU_20gCBYxuRecykSpU19dob?usp=drive_link
 
 ## **Obiettivi**
 
