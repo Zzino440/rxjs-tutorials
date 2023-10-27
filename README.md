@@ -1,4 +1,4 @@
-Esempio codice pratico
+Link a Notion AI (usato per creare documentazione): https://scientific-cicada-9b7.notion.site/Angular-e-RxJS-Un-Approccio-alla-Programmazione-Reattiva-c37f42e355e8444f80a4e7e2f531d56f?pvs=4
 
 ## **Chi sono**
 
