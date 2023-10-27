@@ -20,6 +20,7 @@ import {MatCardModule} from "@angular/material/card";
 import {ToolbarComponent} from './components/toolbar/toolbar.component';
 import {MatToolbarModule} from "@angular/material/toolbar";
 import { RxjsExampleFourComponent } from './components/rxjs-examples/rxjs-example-four/rxjs-example-four.component';
+import { RxjsExampleFiveComponent } from './components/rxjs-examples/rxjs-example-five/rxjs-example-five.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { RxjsExampleFourComponent } from './components/rxjs-examples/rxjs-exampl
     RxjsExampleTwoComponent,
     RxjsExampleThreeComponent,
     RxjsExampleFourComponent,
+    RxjsExampleFiveComponent,
   ],
   imports: [
     AppRoutingModule,

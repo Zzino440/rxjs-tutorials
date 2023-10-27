@@ -4,6 +4,7 @@ import {RxjsExampleOneComponent} from "./components/rxjs-examples/rxjs-example-o
 import {RxjsExampleTwoComponent} from "./components/rxjs-examples/rxjs-example-two/rxjs-example-two.component";
 import {RxjsExampleThreeComponent} from "./components/rxjs-examples/rxjs-example-three/rxjs-example-three.component";
 import {RxjsExampleFourComponent} from "./components/rxjs-examples/rxjs-example-four/rxjs-example-four.component";
+import {RxjsExampleFiveComponent} from "./components/rxjs-examples/rxjs-example-five/rxjs-example-five.component";
 
 
 const routes: Routes = [
@@ -12,6 +13,7 @@ const routes: Routes = [
   {path: 'rxjs-examples/rxjs-example-two', component:RxjsExampleTwoComponent},
   {path: 'rxjs-examples/rxjs-example-three', component:RxjsExampleThreeComponent},
   {path: 'rxjs-examples/rxjs-example-four', component:RxjsExampleFourComponent},
+  {path: 'rxjs-examples/rxjs-example-five', component:RxjsExampleFiveComponent},
 ]
 
 @NgModule({
